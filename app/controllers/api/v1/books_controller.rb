@@ -98,7 +98,8 @@ module Api
       end
 
       def set_author
-        @author = Author.where("id": params[:author_id]).first if params[:author_id]
+        return @author = Author.where("id": params[:author_id].to_i).first if params[:author_id]
+        @author = Author.where("id": @book.author_id).first        
       end
 
       def validate_author_exist
