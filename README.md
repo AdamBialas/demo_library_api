@@ -23,9 +23,15 @@
 
 * How to run the test suite
 
+  rails s
+
+* How to run the test suite
+
   rake test
 
-* Api functions
+* Api endpoints
+
+---
 
   GET api/v1/authors
 
@@ -39,7 +45,13 @@
 
    api/v1/authors?page=x - for get data from page x
 
-   api/v1/authors/:author_id - show only data for :author_id
+ ---
+
+  GET api/v1/authors/:author_id 
+  
+  show only data for :author_id
+
+  {"id":1,"first_name":"Adam","last_name":"Mickiewicz","genre":"Drama","books":[{"id":4,"title":"Pan Tadeusz","cover":null,"data":"{}"}]}
 
 ---
 
@@ -122,9 +134,9 @@
 
 ---
 
-  PUT api/v1/authors/:author_id/books
+  PUT api/v1/authors/:author_id/books/:book_id
 
-  update book on :author_id list
+  update book with :book_id on :author_id list
 
   json body to send  { "book": {"title": "Pan Tadeusz", "data": { "ilosc": 200} }}
 
@@ -144,8 +156,85 @@
 
 ---
 
-  DELETE api/v1/authors/:author_id/books
+  DELETE api/v1/authors/:author_id/books/:book_id
 
-  delete book on :author_id list
+  delete book with :book_id from :author_id list
+
+---
+
+  POST api/v1/authors/:author_id/books/:book_id/cover
+
+  data to send 
+  "Content-Type: multipart/form-data" 
+   "photo=//binary stream of image data//"
+
+  upload cover jpg file for book with :book_id
+
+  status 201
+  {
+    "id": 5,
+    "cover": "/api/v1/books/5/cover"
+  }
+
+---
+
+  DELETE api/v1/authors/:author_id/books/:book_id/cover
+   
+  clear cover file for book with :book_id
+
+
+---
+
+  GET api/v1/books/
+
+  list of books in the library (with authors info)
+  
+  {"books":[{"id":4,"title":"Pan Tadeusz","data":"{}","cover":null,"author":{"id":1,"name":"Adam","last_name":"Mickiewicz","genre":"Drama"}},{"id":6,"title":"Pan Tadeuszek 21","data":{"ilosc":1000,"data_wydania":"01-01-2009"},"cover":null,"author":{"id":2,"name":"Adam","last_name":"Asnyk","genre":"Drama"}}],"meta": 
+  {"current_page":1,"total_pages":6,"per_page_count":2,"total_count":11}}
+  
+  - meta is additional info for paginate data
+
+  optional params :
+
+   api/v1/books?page=x - for get data from page x
+
+---
+
+  GET api/v1/books/:book_id
+
+  get info for current book with :book_id
+
+  {"id":4,"title":"Pan Tadeusz","data":"{}","cover":null,"author":{"id":1,"name":"Adam","last_name":"Mickiewicz","genre":"Drama"}}
+
+---
+
+  GET api/v1/books/:book_id/cover
+
+  get jpeg image of cover book with :book_id
+
+
+---
+
+Api endpints without user restrictions :
+  
+  GET api/v1/authors
+  
+  GET api/v1/authors/:author_id
+  
+  GET api/v1/books/
+  
+  GET api/v1/books/:book_id
+  
+  GET api/v1/books/:book_id/cover
+  
+  
+
+
+
+  
+  
+
+  
+
 
 
