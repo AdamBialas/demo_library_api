@@ -63,6 +63,8 @@
 
   json body to send  { 'author': {'first_name': "Adam", 'last_name': "Mickiewicz" , 'genre': "Drama"  }}
 
+  genre is a value from list [Drama, Fantasy, Fiction, Comedy, Historical]
+
   create new autor
 
    {
