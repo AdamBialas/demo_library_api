@@ -13,6 +13,10 @@
 
   database config in config/database.yml
 
+   set correct values for :
+
+    username: , password:  host: , port:
+
 * Database creation
 
   rails db:setup
