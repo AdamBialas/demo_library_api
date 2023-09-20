@@ -9,6 +9,7 @@ module Api
       before_action :authenticate_user, except: %i[index]
       before_action :set_book, except: %i[create index]
       before_action :set_author
+      before_action :validate_json_format, only: %i[create update]
       before_action :validate_author_exist
       before_action :validate_author, except: %i[create index]
 
@@ -99,24 +100,25 @@ module Api
 
       def set_author
         return @author = Author.where("id": params[:author_id].to_i).first if params[:author_id]
-        
-        @author = Author.where("id": @book.author_id).first if @book     
+
+        @author = Author.where("id": @book.author_id).first if @book
+      end
+
+      def validate_json_format
+        return if params[:data].blank?
+        render json: { error: { "data": "Invalid JSON format" } }, status: :unprocessable_entity and return unless book_params[:data].present?
       end
 
       def validate_author_exist
         return unless params[:author_id]
 
-        if params[:author_id] && @author.nil?
-          render json: { error: { "author_id": "Author not found" } }, status: :unprocessable_entity
-        end
+        render json: { error: { "author_id": "Author not found" } }, status: :not_found and return if (params[:author_id] && @author.nil?)
       end
 
       def validate_author
         return unless params[:author_id]
 
-        unless params[:author_id].to_i == @book.author_id
-          render json: { error: { "author_id": "Wrong author id" } }, status: :unprocessable_entity
-        end
+        render json: { error: { "author_id": "Wrong author id" } }, status: :unprocessable_entity and return unless (params[:author_id].to_i == @book.author_id)
       end
 
       def record_not_found
