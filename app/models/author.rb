@@ -9,4 +9,8 @@ class Author < ApplicationRecord
   validates_length_of :last_name, maximum: 32
   validates :genre, presence: true
   validates_inclusion_of :genre, in: GENRE_LIST
+
+  def self.authors_with_books
+    Author.all.includes(:books)
+  end
 end

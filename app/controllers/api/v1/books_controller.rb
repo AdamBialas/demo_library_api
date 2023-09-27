@@ -12,13 +12,14 @@ module Api
       before_action :validate_json_format, only: %i[create update]
       before_action :validate_author_exist
       before_action :validate_author, except: %i[create index]
+      before_action :validate_photo_data, only: %i[book_cover_set]
 
       # GET /authors/1/books or /books/
       def index
         if @author
           @pagy, @books = pagy(@author.books)
         else
-          @pagy, @books = pagy(Book.all.includes(:author))
+          @pagy, @books = pagy(Book.books_with_authors)
         end
         @result = {}
         @result[:books] = @books
@@ -56,19 +57,11 @@ module Api
 
       # POST /authors/1/books/1/cover
       def book_cover_set
-        if params[:photo].present?
-          if params[:photo].content_type == "image/jpeg"
-            @book.cover = params[:photo].read
-            if @book.save
-              render status: :created
-            else
-              render json: { error: @book.errors }, status: :unprocessable_entity
-            end
-          else
-            render json: { error: { "photo": "Photo not a jpeg file" } }, status: :unprocessable_entity
-          end
+        @book.cover = params[:photo].read
+        if @book.save
+          render status: :created
         else
-          render json: { error: { "photo": "Missing parameter" } }, status: :unprocessable_entity
+          render json: { error: @book.errors }, status: :unprocessable_entity
         end
       end
 
@@ -118,11 +111,16 @@ module Api
       def validate_author
         return unless params[:author_id]
 
-        render json: { error: { "author_id": "Wrong author id" } }, status: :unprocessable_entity and return unless (params[:author_id].to_i == @book.author_id)
+        render json: { error: { "author_id": "Wrong author id" } }, status: :bad_request and return unless (params[:author_id].to_i == @book.author_id)
       end
 
       def record_not_found
         render json: { error: { "id": "Book not found" } }, status: :not_found
+      end
+
+      def validate_photo_data
+        render json: { error: { "photo": "Missing parameter" } }, status: :unprocessable_entity and return unless params[:photo].present?
+        render json: { error: { "photo": "Photo not a jpeg file" } }, status: :unprocessable_entity and return unless params[:photo].content_type == "image/jpeg"
       end
 
       # Only allow a list of trusted parameters through.

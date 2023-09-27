@@ -11,7 +11,7 @@ module Api
 
       # GET /authors
       def index
-        @pagy, authors = pagy(Author.all.includes(:books))
+        @pagy, authors = pagy(Author.authors_with_books)
         @result = {}
         @result[:authors] = authors
         @result[:meta] = pagination(@pagy)
